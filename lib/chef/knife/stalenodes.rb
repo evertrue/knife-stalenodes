@@ -88,7 +88,7 @@ module KnifeStalenodes
       "ohai_time:[* TO #{calculate_time}]"
     end
 
-    def check_last_run_time(time)
+    def time_since_last_chef_run(time)
       diff = Time.now.to_i - time
       minutes = (diff / 60)
       days = (minutes / 60 / 24)
@@ -134,7 +134,7 @@ module KnifeStalenodes
       }
 
       query.search(:node, query_string, search_args).first.each do |node|
-        msg = check_last_run_time(node['ohai_time'].to_i)
+        msg = time_since_last_chef_run(node['ohai_time'].to_i)
 
         if use_ec2?
           islive = live_hosts.include?(node['name']) ? '' : ' - NOT IN EC2'
