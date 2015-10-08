@@ -75,7 +75,7 @@ module KnifeStalenodes
              end
            )
 
-    def calculate_time
+    def max_age_secs
       seconds = config[:days].to_i * 86_400 +
                 config[:hours].to_i * 3_600 +
                 config[:minutes].to_i * 60
@@ -84,8 +84,8 @@ module KnifeStalenodes
     end
 
     def query_string
-      return "ohai_time:[#{calculate_time} TO *]" if config[:reverse]
-      "ohai_time:[* TO #{calculate_time}]"
+      return "ohai_time:[#{max_age_secs} TO *]" if config[:reverse]
+      "ohai_time:[* TO #{max_age_secs}]"
     end
 
     def time_since_last_chef_run(time)
