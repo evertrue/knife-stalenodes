@@ -76,11 +76,13 @@ module KnifeStalenodes
            )
 
     def max_age_secs
-      seconds = config[:days].to_i * 86_400 +
-                config[:hours].to_i * 3_600 +
-                config[:minutes].to_i * 60
+      @max_age_secs ||= begin
+        seconds = config[:days].to_i * 86_400 +
+                  config[:hours].to_i * 3_600 +
+                  config[:minutes].to_i * 60
 
-      Time.now.to_i - seconds
+        Time.now.to_i - seconds
+      end
     end
 
     def query_string
