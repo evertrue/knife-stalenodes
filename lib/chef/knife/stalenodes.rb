@@ -21,16 +21,10 @@ module KnifeStalenodes
   class Stalenodes < Chef::Knife
     banner 'knife stalenodes [options]'
 
-    # Don't lazy load or you'll get an error
-    require 'chef/environment'
-    require 'chef/node'
-    require 'chef/role'
-    require 'chef/api_client'
     # Do lazy load this stuff
     deps do
       require 'highline'
       require 'chef/search/query'
-      require 'chef/mixin/command'
     end
 
     option :reverse,
