@@ -15,8 +15,6 @@
 # limitations under the License.
 #
 
-require 'knife-stalenodes/partial_search'
-
 module KnifeStalenodes
   class Stalenodes < Chef::Knife
     banner 'knife stalenodes [options]'
@@ -126,9 +124,9 @@ module KnifeStalenodes
         end.map { |s| s.tags['Name'] }
       end
 
-      query = Chef::PartialSearch.new
+      query = Chef::Search::Query.new
       search_args = {
-        keys: {
+        filter_result: {
           ohai_time: ['ohai_time'],
           name: ['name']
         },
