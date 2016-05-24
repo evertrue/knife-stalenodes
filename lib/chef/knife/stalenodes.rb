@@ -55,6 +55,11 @@ module KnifeStalenodes
            description: 'Max number of hosts to search',
            default:     2500
 
+    option :debug,
+           long:        '--debug',
+           description: 'Enable debug mode',
+           boolean:     true
+
     option :use_ec2,
            short:       '-e',
            long:        '--use-ec2',
@@ -78,6 +83,11 @@ module KnifeStalenodes
     end
 
     def query_string
+      if config[:debug]
+        puts "Searching for nodes #{config[:reverse] ? 'young' : 'old'}er " \
+             "than #{max_age_secs} seconds."
+      end
+
       return "ohai_time:[#{max_age_secs} TO *]" if config[:reverse]
       "ohai_time:[* TO #{max_age_secs}]"
     end
@@ -122,7 +132,8 @@ module KnifeStalenodes
       search_args = {
         filter_result: {
           ohai_time: ['ohai_time'],
-          name: ['name']
+          name: ['name'],
+          chef_version: ['chef_packages', 'chef', 'version']
         },
         rows: config[:maxhost]
       }
@@ -135,6 +146,15 @@ module KnifeStalenodes
         end
 
         output = "#{@ui.color(msg[:text], msg[:color])} ago: #{node['name']}"
+
+        if config[:debug]
+          age_str = (Time.now.to_i - node['ohai_time']).to_s
+          output += ' (' \
+                    "ohai_time: #{@ui.color(node['ohai_time'].to_s, :yellow)} " \
+                    "age in seconds: #{@ui.color(age_str, :green)}" \
+                    "chef_version: #{@ui.color(node['chef_version'], :red)} " \
+                    ')'
+        end
 
         if use_ec2?
           HighLine.new.say output + islive
