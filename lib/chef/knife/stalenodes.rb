@@ -83,12 +83,17 @@ module KnifeStalenodes
     def connection
       @connection ||= begin
         require 'fog'
-        connection = Fog::Compute.new(
-          :provider => 'AWS',
-          :aws_access_key_id => Chef::Config[:knife][:aws_access_key_id],
-          :aws_secret_access_key => Chef::Config[:knife][:aws_secret_access_key],
-          :region => Chef::Config[:knife][:region]
-        )
+        opts = {
+          provider: 'AWS',
+          region: Chef::Config[:knife][:region]
+        }
+
+        if Chef::Config[:knife][:aws_access_key_id]
+          opts[:aws_access_key_id] = Chef::Config[:knife][:aws_access_key_id]
+          opts[:aws_secret_access_key] = Chef::Config[:knife][:aws_secret_access_key]
+        end
+
+        Fog::Compute.new opts
       end
     end
 
